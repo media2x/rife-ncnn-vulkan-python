@@ -66,6 +66,49 @@ jobs:
         name: ${{ env.PACKAGENAME }}
         path: ${{ env.PACKAGENAME }}.zip
 
+  ubuntu-1804:
+    needs: [setup]
+    runs-on: ubuntu-18.04
+    env:
+      PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-ubuntu-1804
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: cache-vulkansdk
+        id: cache-vulkansdk
+        uses: actions/cache@v1
+        with:
+          path: "1.2.162.0"
+          key: vulkansdk-linux-x86_64-1.2.162.0
+      - name: vulkansdk
+        if: steps.cache-vulkansdk.outputs.cache-hit != 'true'
+        run: |
+          wget https://sdk.lunarg.com/sdk/download/1.2.162.0/linux/vulkansdk-linux-x86_64-1.2.162.0.tar.gz?Human=true -O vulkansdk-linux-x86_64-1.2.162.0.tar.gz
+          tar -xf vulkansdk-linux-x86_64-1.2.162.0.tar.gz
+          rm -rf 1.2.162.0/source 1.2.162.0/samples
+          find 1.2.162.0 -type f | grep -v -E 'vulkan|glslang' | xargs rm
+      - name: build
+        run: |
+          export VULKAN_SDK=`pwd`/1.2.162.0/x86_64
+          mkdir build && cd build
+          cmake ../src
+          cmake --build . -j 2
+      - name: package
+        run: |
+          mkdir -p ${{ env.PACKAGENAME }}
+          cp README.md LICENSE ${{ env.PACKAGENAME }}
+          cp build/rife_ncnn_vulkan.py ${{ env.PACKAGENAME }}
+          cp build/rife_ncnn_vulkan_wrapper.py ${{ env.PACKAGENAME }}
+          cp build/_rife_ncnn_vulkan_wrapper.so ${{ env.PACKAGENAME }}
+          cp -r models/ ${{ env.PACKAGENAME }}
+          zip -9 -r ${{ env.PACKAGENAME }}.zip ${{ env.PACKAGENAME }}
+      - name: upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.PACKAGENAME }}
+          path: ${{ env.PACKAGENAME }}.zip
+
   openmp-macos:
     runs-on: macos-latest
     steps:
@@ -254,7 +297,7 @@ jobs:
         path: ${{ env.PACKAGENAME }}.zip
 
   release:
-    needs: [setup, ubuntu, macos, windows]
+    needs: [setup, ubuntu, ubuntu-1804, macos, windows]
     runs-on: ubuntu-latest
     steps:
     - name: download
@@ -278,6 +321,17 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-ubuntu
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ env.PACKAGENAME }}/${{ env.PACKAGENAME }}.zip
+        asset_name: ${{ env.PACKAGENAME }}.zip
+        asset_content_type: application/zip
+
+    - name: upload-ubuntu-1804
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PACKAGENAME: ${{ needs.setup.outputs.APPNAME }}-${{ needs.setup.outputs.VERSION }}-ubuntu-1804
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: artifacts/${{ env.PACKAGENAME }}/${{ env.PACKAGENAME }}.zip

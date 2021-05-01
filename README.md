@@ -9,8 +9,7 @@ rife-ncnn-vulkan-python wraps [rife-ncnn-vulkan project](https://github.com/nihu
 
 ## Downloads
 
-Linux/Windos/Mac X86_64 build releases are available now. However, for Linux you may need to compile it yourself if you
-are using python version other than 3.8 . (The compiled python C extension library is bound to python version now)
+Linux/Windos/Mac X86_64 build releases are available now. **However, for Linux (Like Ubuntu 18.04) with an older GLIBC (version < 2.29), you may try to use the ubuntu-1804 release or just compile it on your own.**
 
 ## Build
 
