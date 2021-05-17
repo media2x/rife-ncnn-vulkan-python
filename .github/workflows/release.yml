@@ -313,7 +313,7 @@ jobs:
       with:
         tag_name: ${{ needs.setup.outputs.VERSION }}
         release_name: Release ${{ needs.setup.outputs.VERSION }}
-        draft: false
+        draft: true
         prerelease: false
 
     - name: upload-ubuntu

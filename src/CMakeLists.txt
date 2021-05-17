@@ -6,8 +6,8 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 project(rife-ncnn-vulkan-python)
 
 # Python
-if (${CMAKE_VERSION} VERSION_LESS "3.15")
-    find_package(Python REQUIRED)
+if (${CMAKE_VERSION} VERSION_LESS "3.15" OR ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+    find_package(PythonLibs REQUIRED)
 else()
     find_package(Python REQUIRED COMPONENTS Development)
 endif()
@@ -293,7 +293,7 @@ swig_add_library(rife_ncnn_vulkan_wrapper LANGUAGE python SOURCES rife.i rife.cp
 add_dependencies(rife_ncnn_vulkan_wrapper generate-spirv)
 target_compile_options(rife_ncnn_vulkan_wrapper PUBLIC -fexceptions)
 
-if (${CMAKE_VERSION} VERSION_LESS "3.15")
+if (${CMAKE_VERSION} VERSION_LESS "3.15" OR ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     include_directories(${PYTHON_INCLUDE_DIRS})
     target_link_libraries(rife_ncnn_vulkan_wrapper ${RIFE_LINK_LIBRARIES} ${PYTHON_LIBRARIES})
 else()
