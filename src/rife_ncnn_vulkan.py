@@ -20,7 +20,7 @@ class RIFE:
                  tta_mode: bool = False,
                  uhd_mode: bool = False,
                  num_threads: int = 1):
-        rife_v2 = "rife-v2" in model
+        rife_v2 = ("rife-v2" in model) or ("rife-v3" in model)
         self.model = model
 
         if (scale & (scale -1)) == 0:
