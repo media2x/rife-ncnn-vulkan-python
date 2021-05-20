@@ -9,7 +9,9 @@ rife-ncnn-vulkan-python wraps [rife-ncnn-vulkan project](https://github.com/nihu
 
 ## Downloads
 
-Linux/Windos/Mac X86_64 build releases are available now. **However, for Linux (Like Ubuntu 18.04) with an older GLIBC (version < 2.29), you may try to use the ubuntu-1804 release or just compile it on your own.**
+Linux/Windos/Mac X86_64 build releases are available now. 
+- **However, for Linux (Like Ubuntu 18.04) with an older GLIBC (version < 2.29), you may try to use the ubuntu-1804 release or just compile it on your own.**
+- **Windows release is not working for all python version. The version of Windows build is for python 3.9. This is a known issue: [ImportError: DLL load failed while importing _rife_ncnn_vulkan_wrapper: The specified module could not be found.](https://github.com/ArchieMeng/rife-ncnn-vulkan-python/issues/1)**
 
 ## Build
 
@@ -30,9 +32,10 @@ I used Visual Studio 2019 and msvc v142 to build this project for Windows.
 
 Install visual studio and open the project directory, and build. Job done.
 
-The only problem on Windows is that, you cannot use [CMake for Windows](https://cmake.org/download/) to generate the Visual Studio solution file and build it. This will make the lib crash on loading.
+The only problem on Windows is that, you cannot use [CMake for Windows](https://cmake.org/download/) GUI to generate the Visual Studio solution file and build it. This will make the lib crash on loading.
 
-The only way is [use Visual Studio to open the project as directory](https://www.microfocus.com/documentation/visual-cobol/vc50/VS2019/GUID-BE1C48AA-DB22-4F38-9644-E9B48658EF36.html), and build it from Visual Studio.
+~~The only way is~~ One way is [use Visual Studio to open the project as directory](https://www.microfocus.com/documentation/visual-cobol/vc50/VS2019/GUID-BE1C48AA-DB22-4F38-9644-E9B48658EF36.html), and build it from Visual Studio. 
+And another way is build it from powershell just like what is wrote in [release.yml](.github/workflows/release.yml)
 
 ## About RIFE
 
