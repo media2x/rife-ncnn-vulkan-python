@@ -5,13 +5,14 @@ A Python FFI of nihui/rife-ncnn-vulkan achieved with SWIG.
 ## Usages
 
 ```python
-from rife_ncnn_vulkan import Rife
+from rife_ncnn_vulkan import RIFE
 from PIL import Image
 
-with Image.open("input.png") as image:
-  waifu2x = Waifu2x(gpuid=0, scale=2, noise=3)
-  image = waifu2x.process(image)
-  image.save("output.png")
+with Image.open("input0.png") as image0:
+    with Image.open("input1.png") as image1:
+      rife = RIFE(gpuid=0)
+      image = rife.process(image0, image1)
+      image.save("output.png")
 ```
 
 More descriptions are to be added.

@@ -1,0 +1,3 @@
+[submodule "rife_ncnn_vulkan_python/rife-ncnn-vulkan"]
+	path = rife_ncnn_vulkan_python/rife-ncnn-vulkan
+	url = https://github.com/nihui/rife-ncnn-vulkan.git
