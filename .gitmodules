@@ -1,3 +1,0 @@
-[submodule "src/ncnn"]
-	path = rife_ncnn_vulkan_python/ncnn
-	url = https://github.com/Tencent/ncnn.git
