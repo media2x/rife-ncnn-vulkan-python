@@ -5,7 +5,7 @@ A Python FFI of nihui/rife-ncnn-vulkan achieved with SWIG.
 ## Usages
 
 ```python
-from rife_ncnn_vulkan import RIFE
+from rife_ncnn_vulkan import Rife
 from PIL import Image
 
 with Image.open("input0.png") as image0:
