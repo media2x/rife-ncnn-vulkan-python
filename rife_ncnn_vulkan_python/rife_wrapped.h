@@ -1,10 +1,5 @@
-//
-// Created by archiemeng on 23/4/21.
-//
-
 #ifndef RIFE_NCNN_VULKAN_RIFEWRAPPER_H
 #define RIFE_NCNN_VULKAN_RIFEWRAPPER_H
-
 #include "rife.h"
 
 // wrapper class of ncnn::Mat
