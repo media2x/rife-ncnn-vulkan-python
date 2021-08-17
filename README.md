@@ -10,7 +10,7 @@ from PIL import Image
 
 with Image.open("input0.png") as image0:
     with Image.open("input1.png") as image1:
-      rife = RIFE(gpuid=0)
+      rife = Rife(gpuid=0)
       image = rife.process(image0, image1)
       image.save("output.png")
 ```
