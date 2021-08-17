@@ -8,9 +8,16 @@ cmake_minimum_required(VERSION 3.9)
 
 set(CMAKE_BUILD_TYPE Release)
 
+option(USE_SYSTEM_NCNN "build with system libncnn" OFF)
+option(USE_STATIC_MOLTENVK "link moltenvk static library" OFF)
+
+find_package(Threads)
+find_package(OpenMP)
+find_package(Vulkan REQUIRED)
+
 # Python
-if (${CMAKE_VERSION} VERSION_LESS "3.15" OR ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-    find_package(PythonLibs REQUIRED)
+if (${CMAKE_VERSION} VERSION_LESS "3.15")
+    find_package(Python REQUIRED)
 else()
     find_package(Python REQUIRED COMPONENTS Development)
 endif()
@@ -20,27 +27,16 @@ find_package(SWIG REQUIRED COMPONENTS python)
 if(SWIG_FOUND)
     message("SWIG found: ${SWIG_EXECUTABLE}")
     INCLUDE(${SWIG_USE_FILE})
-    if(NOT SWIG_python_FOUND)
-        message(WARNING "SWIG python bindings cannot be generated")
-    endif()
 endif()
-
-option(USE_SYSTEM_NCNN "build with system libncnn" OFF)
-option(USE_SYSTEM_WEBP "build with system libwebp" OFF)
-option(USE_STATIC_MOLTENVK "link moltenvk static library" OFF)
-
-find_package(Threads)
-find_package(OpenMP)
-find_package(Vulkan REQUIRED)
 
 macro(rife_add_shader SHADER_SRC)
     get_filename_component(SHADER_SRC_NAME_WE ${SHADER_SRC} NAME_WE)
-    set(SHADER_COMP_HEADER ${CMAKE_CURRENT_BINARY_DIR}/${SHADER_SRC_NAME_WE}.comp.hex.h)
+    set(SHADER_COMP_HEADER ${CMAKE_CURRENT_BINARY_DIR}/rife-ncnn-vulkan/src/${SHADER_SRC_NAME_WE}.comp.hex.h)
 
     add_custom_command(
         OUTPUT ${SHADER_COMP_HEADER}
-        COMMAND ${CMAKE_COMMAND} -DSHADER_SRC=${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_SRC} -DSHADER_COMP_HEADER=${SHADER_COMP_HEADER} -P "${CMAKE_CURRENT_SOURCE_DIR}/generate_shader_comp_header.cmake"
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER_SRC}
+        COMMAND ${CMAKE_COMMAND} -DSHADER_SRC=${CMAKE_CURRENT_SOURCE_DIR}/rife-ncnn-vulkan/src/${SHADER_SRC} -DSHADER_COMP_HEADER=${SHADER_COMP_HEADER} -P "${CMAKE_CURRENT_SOURCE_DIR}/rife-ncnn-vulkan/src/generate_shader_comp_header.cmake"
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/rife-ncnn-vulkan/src/${SHADER_SRC}
         COMMENT "Preprocessing shader source ${SHADER_SRC_NAME_WE}.comp"
         VERBATIM
     )
@@ -49,7 +45,8 @@ macro(rife_add_shader SHADER_SRC)
     list(APPEND SHADER_SPV_HEX_FILES ${SHADER_COMP_HEADER})
 endmacro()
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/rife-ncnn-vulkan/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rife-ncnn-vulkan/src)
 include_directories(.)
 
 if(OPENMP_FOUND)
@@ -105,7 +102,7 @@ endif()
 
 if(NOT USE_SYSTEM_NCNN)
     # build ncnn library
-    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ncnn/CMakeLists.txt")
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/rife-ncnn-vulkan/src/ncnn/CMakeLists.txt")
         message(FATAL_ERROR "The submodules were not downloaded! Please update submodules with \"git submodule update --init --recursive\" and try again.")
     endif()
 
@@ -128,12 +125,12 @@ if(NOT USE_SYSTEM_NCNN)
     option(WITH_LAYER_batchnorm "" OFF)
     option(WITH_LAYER_bias "" OFF)
     option(WITH_LAYER_bnll "" OFF)
-    option(WITH_LAYER_concat "" ON)
+    option(WITH_LAYER_concat "" OFF)
     option(WITH_LAYER_convolution "" ON)
     option(WITH_LAYER_crop "" ON)
     option(WITH_LAYER_deconvolution "" ON)
     option(WITH_LAYER_dropout "" OFF)
-    option(WITH_LAYER_eltwise "" OFF)
+    option(WITH_LAYER_eltwise "" ON)
     option(WITH_LAYER_elu "" OFF)
     option(WITH_LAYER_embed "" OFF)
     option(WITH_LAYER_exp "" OFF)
@@ -146,15 +143,15 @@ if(NOT USE_SYSTEM_NCNN)
     option(WITH_LAYER_mvn "" OFF)
     option(WITH_LAYER_pooling "" ON)
     option(WITH_LAYER_power "" OFF)
-    option(WITH_LAYER_prelu "" ON)
+    option(WITH_LAYER_prelu "" OFF)
     option(WITH_LAYER_proposal "" OFF)
     option(WITH_LAYER_reduction "" OFF)
     option(WITH_LAYER_relu "" ON)
     option(WITH_LAYER_reshape "" OFF)
     option(WITH_LAYER_roipooling "" OFF)
-    option(WITH_LAYER_scale "" OFF)
-    option(WITH_LAYER_sigmoid "" ON)
-    option(WITH_LAYER_slice "" ON)
+    option(WITH_LAYER_scale "" ON)
+    option(WITH_LAYER_sigmoid "" OFF)
+    option(WITH_LAYER_slice "" OFF)
     option(WITH_LAYER_softmax "" OFF)
     option(WITH_LAYER_split "" ON)
     option(WITH_LAYER_spp "" OFF)
@@ -163,8 +160,8 @@ if(NOT USE_SYSTEM_NCNN)
     option(WITH_LAYER_tile "" OFF)
     option(WITH_LAYER_rnn "" OFF)
     option(WITH_LAYER_lstm "" OFF)
-    option(WITH_LAYER_binaryop "" ON)
-    option(WITH_LAYER_unaryop "" ON)
+    option(WITH_LAYER_binaryop "" OFF)
+    option(WITH_LAYER_unaryop "" OFF)
     option(WITH_LAYER_convolutiondepthwise "" OFF)
     option(WITH_LAYER_padding "" ON)
     option(WITH_LAYER_squeeze "" OFF)
@@ -177,7 +174,7 @@ if(NOT USE_SYSTEM_NCNN)
     option(WITH_LAYER_deconvolutiondepthwise "" OFF)
     option(WITH_LAYER_shufflechannel "" OFF)
     option(WITH_LAYER_instancenorm "" OFF)
-    option(WITH_LAYER_clip "" ON)
+    option(WITH_LAYER_clip "" OFF)
     option(WITH_LAYER_reorg "" OFF)
     option(WITH_LAYER_yolodetectionoutput "" OFF)
     option(WITH_LAYER_quantize "" OFF)
@@ -192,7 +189,7 @@ if(NOT USE_SYSTEM_NCNN)
     option(WITH_LAYER_selu "" OFF)
     option(WITH_LAYER_hardswish "" OFF)
     option(WITH_LAYER_noop "" OFF)
-    option(WITH_LAYER_pixelshuffle "" ON)
+    option(WITH_LAYER_pixelshuffle "" OFF)
     option(WITH_LAYER_deepcopy "" OFF)
     option(WITH_LAYER_mish "" OFF)
     option(WITH_LAYER_statisticspooling "" OFF)
@@ -205,7 +202,7 @@ if(NOT USE_SYSTEM_NCNN)
     option(WITH_LAYER_multiheadattention "" OFF)
     option(WITH_LAYER_gelu "" OFF)
 
-    add_subdirectory(ncnn)
+    add_subdirectory("rife-ncnn-vulkan/src/ncnn")
 endif()
 
 rife_add_shader(rife_preproc.comp)
@@ -222,6 +219,8 @@ rife_add_shader(warp_pack4.comp)
 rife_add_shader(warp_pack8.comp)
 
 add_custom_target(generate-spirv DEPENDS ${SHADER_SPV_HEX_FILES})
+
+set(RIFE_LINK_LIBRARIES ncnn ${Vulkan_LIBRARY})
 
 if(USE_STATIC_MOLTENVK)
     find_library(CoreFoundation NAMES CoreFoundation)
@@ -245,22 +244,55 @@ if(USE_STATIC_MOLTENVK)
     )
 endif()
 
-set(RIFE_LINK_LIBRARIES ncnn ${Vulkan_LIBRARY})
+#target_link_libraries(rife-ncnn-vulkan ${RIFE_LINK_LIBRARIES})
 
-# Swig build
-file(COPY ../models DESTINATION .)
-file(COPY rife_ncnn_vulkan.py DESTINATION .)
-set (UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
+set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 set_property(SOURCE rife.i PROPERTY CPLUSPLUS ON DEPENDS generate-spirv)
-swig_add_library(rife_ncnn_vulkan_wrapper LANGUAGE python SOURCES rife.i rife.cpp warp.cpp RIFEWrapper.cpp)
+
+# set output directory for the .py file
+set_property(SOURCE rife.i PROPERTY OUTFILE_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set_property(SOURCE rife.i PROPERTY OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/rife_ncnn_vulkan_python)
+
+swig_add_library(rife_ncnn_vulkan_wrapper
+        TYPE MODULE
+        LANGUAGE python
+        SOURCES rife.i rife-ncnn-vulkan/src/rife.cpp rife_wrapped.cpp
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/rife_ncnn_vulkan_python
+        OUTFILE_DIR ${CMAKE_CURRENT_BINARY_DIR}/rife_ncnn_vulkan_python)
+
 add_dependencies(rife_ncnn_vulkan_wrapper generate-spirv)
 target_compile_options(rife_ncnn_vulkan_wrapper PUBLIC -fexceptions)
 
-if (${CMAKE_VERSION} VERSION_LESS "3.15" OR ${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+# set output directory of the .so file
+if (CALL_FROM_SETUP_PY)
+    set_target_properties(rife_ncnn_vulkan_wrapper PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+else()
+    set_target_properties(rife_ncnn_vulkan_wrapper PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/rife_ncnn_vulkan_python)
+endif()
+
+if (${CMAKE_VERSION} VERSION_LESS "3.15")
     include_directories(${PYTHON_INCLUDE_DIRS})
     target_link_libraries(rife_ncnn_vulkan_wrapper ${RIFE_LINK_LIBRARIES} ${PYTHON_LIBRARIES})
 else()
     target_link_libraries(rife_ncnn_vulkan_wrapper ${RIFE_LINK_LIBRARIES} Python::Module)
 endif()
-#
-#target_link_libraries(rife-ncnn-vulkan ${RIFE_LINK_LIBRARIES})
+
+# Get the autogenerated Python file
+get_property(WRAPPER_PY_FILE
+        TARGET rife_ncnn_vulkan_wrapper
+        PROPERTY SWIG_SUPPORT_FILES)
+
+if(CALL_FROM_SETUP_PY)
+    # Install the autogenerated Python file
+    install(
+            FILES ${WRAPPER_PY_FILE}
+            DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+    install(TARGETS rife_ncnn_vulkan_wrapper
+            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(DIRECTORY rife-ncnn-vulkan/models DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES rife_ncnn_vulkan.py DESTINATION ${CMAKE_INSTALL_PREFIX})
+else()
+    file(COPY rife-ncnn-vulkan/models DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/rife_ncnn_vulkan_python)
+    file(COPY rife_ncnn_vulkan.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/rife_ncnn_vulkan_python)
+endif()
