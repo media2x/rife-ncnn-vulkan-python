@@ -13,14 +13,15 @@
 
 %{
     #include "rife.h"
-    #include "RIFEWrapper.h"
+    #include "rife_wrapped.h"
 %}
 
 class RIFE
 {
-    public:
-        RIFE(int gpuid, bool tta_mode = false, bool uhd_mode = false, int num_threads = 1, bool rife_v2 = false);
-        ~RIFE();
+  public:
+    RIFE(int gpuid, bool tta_mode = false, bool uhd_mode = false,
+         int num_threads = 1, bool rife_v2 = false);
+    ~RIFE();
 };
 
-%include "RIFEWrapper.h"
+%include "rife_wrapped.h"
