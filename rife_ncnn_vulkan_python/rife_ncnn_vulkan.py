@@ -7,7 +7,7 @@ Date Created: March 29, 2021
 Last Modified: May 21, 2021
 
 Dev: K4YT3X
-Last Modified: July 11, 2021
+Last Modified: August 17, 2021
 """
 
 # built-in imports
@@ -35,27 +35,28 @@ class Rife:
         uhd_mode: bool = False,
         num_threads: int = 1,
     ):
-        self.model = model
-        rife_v2 = ("rife-v2" in model) or ("rife-v3" in model)
-
         # scale must be a power of 2
         if (scale & (scale - 1)) == 0:
             self.scale = scale
         else:
             raise ValueError("scale should be a power of 2")
 
+        # determine if rife-v2 is used
+        rife_v2 = ("rife-v2" in model) or ("rife-v3" in model)
+
+        # create raw RIFE wrapper object
         self._rife_object = wrapped.RIFEWrapper(
             gpuid, tta_mode, uhd_mode, num_threads, rife_v2
         )
-        self._load()
+        self._load(model)
 
-    def _load(self, model_dir: pathlib.Path = None):
+    def _load(self, model: str, model_dir: pathlib.Path = None):
 
         # if model_dir is not specified
         if model_dir is None:
-            model_dir = pathlib.Path(self.model)
+            model_dir = pathlib.Path(model)
             if not model_dir.is_absolute() and not model_dir.is_dir():
-                model_dir = pathlib.Path(__file__).parent / "models" / self.model
+                model_dir = pathlib.Path(__file__).parent / "models" / model
 
         # if the model_dir is specified and exists
         if model_dir.exists():
@@ -74,8 +75,8 @@ class Rife:
             raise FileNotFoundError(f"{model_dir} not found")
 
     def process(self, image0: Image, image1: Image) -> Image:
-        image0_bytes = image0.tobytes()
-        image1_bytes = image1.tobytes()
+        image0_bytes = bytearray(image0.tobytes())
+        image1_bytes = bytearray(image1.tobytes())
         channels = int(len(image0_bytes) / (image0.width * image0.height))
         output_bytes = bytearray(len(image0_bytes))
 
