@@ -45,7 +45,7 @@ class Rife:
         rife_v2 = ("rife-v2" in model) or ("rife-v3" in model)
 
         # create raw RIFE wrapper object
-        self._rife_object = wrapped.RIFEWrapper(
+        self._rife_object = wrapped.RifeWrapped(
             gpuid, tta_mode, uhd_mode, num_threads, rife_v2
         )
         self._load(model)
