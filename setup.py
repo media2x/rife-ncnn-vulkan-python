@@ -6,7 +6,9 @@ import setuptools
 import sys
 
 # HACK: allows pip to load user site packages when running setup
-os.environ.pop("PYTHONNOUSERSITE")
+if "PYTHONNOUSERSITE" in os.environ:
+    os.environ.pop("PYTHONNOUSERSITE")
+
 sys.path.append(
     str(
         pathlib.Path.home()
