@@ -7,6 +7,7 @@ on:
 env:
   DEVELOPER_DIR: /Applications/Xcode_12.2.app/Contents/Developer
   APPLICATION_NAME: rife-ncnn-vulkan-python
+  APPNAME_SHORT: rife
 
 jobs:
 
@@ -48,17 +49,13 @@ jobs:
     - name: build
       run: |
         export VULKAN_SDK=`pwd`/1.2.162.0/x86_64
-        mkdir build && cd build
-        cmake ../src
-        cmake --build . -j 2
+        cmake -A x64 -B build ../${{ env.APPNAME_SHORT }}_ncnn_vulkan_python
+        cmake --build build -j 2
     - name: package
       run: |
         mkdir -p ${{ env.PACKAGENAME }}
         cp README.md LICENSE ${{ env.PACKAGENAME }}
-        cp build/rife_ncnn_vulkan.py ${{ env.PACKAGENAME }}
-        cp build/rife_ncnn_vulkan_wrapper.py ${{ env.PACKAGENAME }}
-        cp build/_rife_ncnn_vulkan_wrapper.so ${{ env.PACKAGENAME }}
-        cp -r models/ ${{ env.PACKAGENAME }}
+        cp -r build/${{ env.APPNAME_SHORT }}_ncnn_vulkan_python/* ${{ env.PACKAGENAME }}
         zip -9 -r ${{ env.PACKAGENAME }}.zip ${{ env.PACKAGENAME }}
     - name: upload
       uses: actions/upload-artifact@v2
@@ -91,17 +88,13 @@ jobs:
       - name: build
         run: |
           export VULKAN_SDK=`pwd`/1.2.162.0/x86_64
-          mkdir build && cd build
-          cmake ../src
-          cmake --build . -j 2
+          cmake -A x64 -B build ../${{ env.APPNAME_SHORT }}_ncnn_vulkan_python
+          cmake --build build -j 2
       - name: package
         run: |
           mkdir -p ${{ env.PACKAGENAME }}
           cp README.md LICENSE ${{ env.PACKAGENAME }}
-          cp build/rife_ncnn_vulkan.py ${{ env.PACKAGENAME }}
-          cp build/rife_ncnn_vulkan_wrapper.py ${{ env.PACKAGENAME }}
-          cp build/_rife_ncnn_vulkan_wrapper.so ${{ env.PACKAGENAME }}
-          cp -r models/ ${{ env.PACKAGENAME }}
+          cp -r build/${{ env.APPNAME_SHORT }}_ncnn_vulkan_python/* ${{ env.PACKAGENAME }}
           zip -9 -r ${{ env.PACKAGENAME }}.zip ${{ env.PACKAGENAME }}
       - name: upload
         uses: actions/upload-artifact@v2
@@ -225,10 +218,7 @@ jobs:
       run: |
         mkdir -p ${{ env.PACKAGENAME }}
         cp README.md LICENSE ${{ env.PACKAGENAME }}
-        cp build-x86_64/rife_ncnn_vulkan.py ${{ env.PACKAGENAME }}
-        cp build-x86_64/rife_ncnn_vulkan_wrapper.py ${{ env.PACKAGENAME }}
-        cp build-x86_64/_rife_ncnn_vulkan_wrapper.so ${{ env.PACKAGENAME }}
-        cp -r models/ ${{ env.PACKAGENAME }}
+        cp -r build-x86_64/${{ env.APPNAME_SHORT }}_ncnn_vulkan_python/* ${{ env.PACKAGENAME }}
         zip -9 -r ${{ env.PACKAGENAME }}.zip ${{ env.PACKAGENAME }}
     - name: upload
       uses: actions/upload-artifact@v2
@@ -275,20 +265,16 @@ jobs:
         $env:SWIG_DIR="$(pwd)\SWIG"
         $env:SWIG_EXECUTABLE="$(pwd)\SWIG\swig.exe"
         $env:PATH="$env:PATH;$env:SWIG_DIR"
-        mkdir build; cd build
-        cmake -A x64 ../src
-        cmake --build . --config Release -j 2
+        cmake -A x64 -B build ../${{ env.APPNAME_SHORT }}_ncnn_vulkan_python
+        cmake --build build --config Release -j 2
     - name: package
       run: |
         mkdir ${{ env.PACKAGENAME }}
         ls build
         Copy-Item -Verbose -Path "README.md" -Destination "${{ env.PACKAGENAME }}"
         Copy-Item -Verbose -Path "LICENSE" -Destination "${{ env.PACKAGENAME }}"
-        Copy-Item -Verbose -Path "src\rife_ncnn_vulkan.py" -Destination "${{ env.PACKAGENAME }}"
-        Copy-Item -Verbose -Path "build\rife_ncnn_vulkan_wrapper.py" -Destination "${{ env.PACKAGENAME }}"
-        Copy-Item -Verbose -Path "build\Release\_rife_ncnn_vulkan_wrapper.pyd" -Destination "${{ env.PACKAGENAME }}"
         Copy-Item -Verbose -Path "C:\windows\system32\vcomp140.dll" -Destination "${{ env.PACKAGENAME }}"
-        Copy-Item -Verbose -Recurse -Path "models" -Destination "${{ env.PACKAGENAME }}"
+        Copy-Item -Verbose -Recurse -Path build\${{ env.APPNAME_SHORT }}_ncnn_vulkan_python\* -Destination "${{ env.PACKAGENAME }}"
         7z a -r ${{ env.PACKAGENAME }}.zip ${{ env.PACKAGENAME }}
     - name: upload
       uses: actions/upload-artifact@v2
