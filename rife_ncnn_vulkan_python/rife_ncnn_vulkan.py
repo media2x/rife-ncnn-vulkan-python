@@ -96,3 +96,7 @@ class Rife:
         return Image.frombytes(
             image0.mode, (image0.width, image0.height), bytes(output_bytes)
         )
+
+
+class RIFE(Rife):
+    ...
