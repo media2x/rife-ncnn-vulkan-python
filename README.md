@@ -3,7 +3,7 @@
 ![CI](https://github.com/ArchieMeng/rife-ncnn-vulkan-python/workflows/CI/badge.svg)
 
 ## Introduction
-[rife-ncnn-vulkan](https://github.com/nihui/rife-ncnn-vulkan) is nihui's ncnn implementation of Real-World Super-Resolution via Kernel Estimation and Noise Injection super resolution.
+[rife-ncnn-vulkan](https://github.com/nihui/rife-ncnn-vulkan) is nihui's ncnn implementation of Real-Time Intermediate Flow Estimation for Video Frame Interpolation.
 
 rife-ncnn-vulkan-python wraps [rife-ncnn-vulkan project](https://github.com/nihui/rife-ncnn-vulkan) by SWIG to make it easier to integrate rife-ncnn-vulkan with existing python projects.
 
