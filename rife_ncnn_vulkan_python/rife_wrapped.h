@@ -27,7 +27,7 @@ class RifeWrapped : public RIFE
 {
   public:
     RifeWrapped(int gpuid, bool _tta_mode, bool _uhd_mode, int _num_threads,
-                bool _rife_v2);
+                bool _rife_v2, bool _rife_v4);
     int load(const StringType &modeldir);
     int process(const Image &inimage0, const Image &inimage1, float timestamp,
                 Image outimage);
