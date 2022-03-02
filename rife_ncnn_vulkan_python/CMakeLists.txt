@@ -296,7 +296,7 @@ target_compile_options(rife_ncnn_vulkan_wrapper PUBLIC -fexceptions)
 if(CALL_FROM_SETUP_PY)
   set_target_properties(
     rife_ncnn_vulkan_wrapper PROPERTIES LIBRARY_OUTPUT_DIRECTORY
-                                        ${CMAKE_INSTALL_PREFIX})
+                                        ${CMAKE_CURRENT_BINARY_DIR})
 else()
   set_target_properties(
     rife_ncnn_vulkan_wrapper
