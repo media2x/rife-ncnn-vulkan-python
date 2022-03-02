@@ -9,18 +9,20 @@ rife-ncnn-vulkan-python wraps [rife-ncnn-vulkan project](https://github.com/nihu
 
 ## Downloads
 
-Linux/Windos/Mac X86_64 binary build releases are available now.
-
-- **However, for Linux (Like Ubuntu 18.04) with an older GLIBC (version < 2.29), you may try to use the ubuntu-1804 release or just compile it on your own.**
-- **Windows release is not working for all python version. The version of Windows build is for python 3.9. This is a known issue: [ImportError: DLL load failed while importing _rife_ncnn_vulkan_wrapper: The specified module could not be found.](https://github.com/ArchieMeng/rife-ncnn-vulkan-python/issues/1)**
-
-For PyPI supports, we are working on it, and hope will publish it on PyPI in the future.
+Linux/Windos/Mac X86_64 binary build [releases](https://github.com/media2x/rife-ncnn-vulkan-python/releases) are available now.
 
 ## Build
 
 First, you have to install python, python development package (Python native development libs in Visual Studio), vulkan SDK and SWIG on your platform. And then, there are two ways to build it:
-- Use setuptools to build and install into python package directly. (Currently in developing)
+- Install source distribution from PyPI (Currently in developing, need to download models before build.)
+- Use setuptools to build and install into python package directly.
 - Use CMake directly (The old way)
+
+### Install from PyPI
+
+```shell
+pip install rife-ncnn-vulkan-python
+```
 
 ### Use setuptools
 ```shell
@@ -70,7 +72,7 @@ from PIL import Image
 
 with Image.open("input0.png") as image0:
     with Image.open("input1.png") as image1:
-      rife = Rife(gpuid=0)
+      rife = Rife(gpuid=0) # or RIFE(0) like upstream
       image = rife.process(image0, image1)
       image.save("output.png")
 ```
@@ -94,6 +96,7 @@ If you encounter a crash or error, try upgrading your GPU driver:
 | rife-v2.4 | 2.4 |
 | rife-v3.0 | 3.0 |
 | rife-v3.1 | 3.1 |
+| rife-v4 | 4.0 |
 
 ## Original RIFE Project
 
