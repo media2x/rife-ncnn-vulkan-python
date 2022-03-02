@@ -37,10 +37,10 @@ def test_default():
     percent_diff = _calc_image_diff(test_image, output_image)
     logging.getLogger().info(f"%diff: {percent_diff}")
 
+    test_image.close()
+    output_image.close()
     input_image0.close()
     input_image1.close()
-    output_image.close()
-    test_image.close()
 
     assert percent_diff < 0.5
 
