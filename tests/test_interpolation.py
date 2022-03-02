@@ -1,35 +1,64 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from PIL import Image
-from rife_ncnn_vulkan_python import Rife
+import logging
 from pathlib import Path
-import pytest
+
+from PIL import Image, ImageChops, ImageStat
+from rife_ncnn_vulkan_python import Rife
 
 tests_path = Path(__file__).parent
-images_path = tests_path.parent / "rife_ncnn_vulkan_python" / "rife-ncnn-vulkan" / "images"
+images_path = (
+    tests_path.parent / "rife_ncnn_vulkan_python" / "rife-ncnn-vulkan" / "images"
+)
+
+
+def _calc_image_diff(image0: Image.Image, image1: Image.Image) -> float:
+    """
+    calculate the percentage of differences between two images
+
+    :param image0 Image.Image: the first frame
+    :param image1 Image.Image: the second frame
+    :rtype float: the percent difference between the two images
+    """
+    difference = ImageChops.difference(image0, image1)
+    difference_stat = ImageStat.Stat(difference)
+    percent_diff = sum(difference_stat.mean) / (len(difference_stat.mean) * 255) * 100
+    return percent_diff
 
 
 def test_default():
     input_image0 = Image.open(images_path / "0.png")
     input_image1 = Image.open(images_path / "1.png")
+
     interpolator = Rife(0)
     output_image = interpolator.process(input_image0, input_image1)
+
     test_image = Image.open(tests_path / "0.5_default.png")
-    assert test_image.tobytes() == output_image.tobytes()
-    test_image.close()
-    output_image.close()
+    percent_diff = _calc_image_diff(test_image, output_image)
+    logging.getLogger().info(f"%diff: {percent_diff}")
+
     input_image0.close()
     input_image1.close()
+    output_image.close()
+    test_image.close()
+
+    assert percent_diff < 0.5
 
 
 def test_rife_v4():
     input_image0 = Image.open(images_path / "0.png")
     input_image1 = Image.open(images_path / "1.png")
+
     interpolator = Rife(0, model="rife-v4")
     output_image = interpolator.process(input_image0, input_image1)
+
     test_image = Image.open(tests_path / "0.5_v4.png")
-    assert test_image.tobytes() == output_image.tobytes()
-    test_image.close()
-    output_image.close()
+    percent_diff = _calc_image_diff(test_image, output_image)
+    logging.getLogger().info(f"%diff: {percent_diff}")
+
     input_image0.close()
     input_image1.close()
+    output_image.close()
+    test_image.close()
+
+    assert percent_diff < 0.5
