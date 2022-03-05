@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from pathlib import Path
+from decimal import Decimal, getcontext
 
 from PIL import Image, ImageChops, ImageStat
 from rife_ncnn_vulkan_python import Rife
@@ -10,6 +11,8 @@ tests_path = Path(__file__).parent
 images_path = (
     tests_path.parent / "rife_ncnn_vulkan_python" / "rife-ncnn-vulkan" / "images"
 )
+# set Decimal precision
+getcontext().prec = 4
 
 
 def _calc_image_diff(image0: Image.Image, image1: Image.Image) -> float:
@@ -62,3 +65,22 @@ def test_rife_v4():
     test_image.close()
 
     assert percent_diff < 0.5
+
+
+def test_rife_v4_timestep():
+    input_image0 = Image.open(images_path / "0.png")
+    input_image1 = Image.open(images_path / "1.png")
+
+    interpolator = Rife(0, model="rife-v4")
+    step = Decimal(0)
+    while step <= 1:
+        output_image = interpolator.process(input_image0, input_image1, float(step))
+        test_image = Image.open(tests_path / f"{float(step)}_v4.png")
+        percent_diff = _calc_image_diff(test_image, output_image)
+        logging.getLogger().info(f"%diff: {percent_diff}")
+        assert percent_diff < 0.5
+        test_image.close()
+        step += Decimal(0.2)
+
+    input_image0.close()
+    input_image1.close()
