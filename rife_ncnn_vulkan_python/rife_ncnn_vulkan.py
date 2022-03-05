@@ -29,7 +29,7 @@ class Rife:
     def __init__(
         self,
         gpuid: int = -1,
-        model: str = "rife-HD",
+        model: str = "rife-v2.3",
         scale: int = 2,
         tta_mode: bool = False,
         uhd_mode: bool = False,
