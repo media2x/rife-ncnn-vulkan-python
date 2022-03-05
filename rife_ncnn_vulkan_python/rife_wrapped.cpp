@@ -17,7 +17,7 @@ int RifeWrapped::load(const StringType &modeldir)
 }
 
 int RifeWrapped::process(const Image &inimage0, const Image &inimage1,
-                         float timestep, Image outimage)
+                         float timestep, Image &outimage)
 {
     int c = inimage0.elempack;
     ncnn::Mat inimagemat0 =

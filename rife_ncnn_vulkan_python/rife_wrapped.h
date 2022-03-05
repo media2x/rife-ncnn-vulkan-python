@@ -30,7 +30,7 @@ class RifeWrapped : public RIFE
                 bool _rife_v2, bool _rife_v4);
     int load(const StringType &modeldir);
     int process(const Image &inimage0, const Image &inimage1, float timestamp,
-                Image outimage);
+                Image &outimage);
 };
 
 int get_gpu_count();
