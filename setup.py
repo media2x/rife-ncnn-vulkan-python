@@ -95,7 +95,7 @@ setuptools.setup(
         cmake_build_extension.CMakeExtension(
             name="rife-ncnn-vulkan-python",
             install_prefix="rife_ncnn_vulkan_python",
-            write_top_level_init="from .rife_ncnn_vulkan import Rife, RIFE",
+            write_top_level_init="from .rife_ncnn_vulkan import Rife, RIFE, wrapped",
             source_dir=str(pathlib.Path(__file__).parent / "rife_ncnn_vulkan_python"),
             cmake_configure_options=[
                 "-DBUILD_SHARED_LIBS:BOOL=OFF",
