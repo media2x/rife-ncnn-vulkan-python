@@ -80,6 +80,11 @@ def download_models() -> None:
     # remove the temporary files/dirs
     rife_ncnn_vulkan_zip.unlink()
 
+cmake_flags = [
+    "-DBUILD_SHARED_LIBS:BOOL=OFF",
+    "-DCALL_FROM_SETUP_PY:BOOL=ON",
+]
+cmake_flags.extend(os.environ.get("CMAKE_FLAGS", "").split())
 
 # when building bdist wheels/installing the package
 if sys.argv[1] == "bdist_wheel":
@@ -97,10 +102,7 @@ setuptools.setup(
             install_prefix="rife_ncnn_vulkan_python",
             write_top_level_init="from .rife_ncnn_vulkan import Rife, RIFE, wrapped",
             source_dir=str(pathlib.Path(__file__).parent / "rife_ncnn_vulkan_python"),
-            cmake_configure_options=[
-                "-DBUILD_SHARED_LIBS:BOOL=OFF",
-                "-DCALL_FROM_SETUP_PY:BOOL=ON",
-            ],
+            cmake_configure_options=cmake_flags,
         )
     ],
     cmdclass={"build_ext": cmake_build_extension.BuildExtension},
