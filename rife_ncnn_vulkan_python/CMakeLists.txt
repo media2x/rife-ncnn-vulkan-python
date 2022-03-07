@@ -16,10 +16,18 @@ find_package(OpenMP)
 find_package(Vulkan REQUIRED)
 
 # Python
-if(${CMAKE_VERSION} VERSION_LESS "3.15")
-  find_package(Python REQUIRED)
+if (DEFINED PY_VERSION)
+  if (${CMAKE_VERSION} VERSION_LESS "3.15")
+  	find_package(Python ${PY_VERSION} EXACT REQUIRED)
+  else()
+   	find_package(Python ${PY_VERSION} EXACT REQUIRED COMPONENTS Development)
+  endif()
 else()
-  find_package(Python REQUIRED COMPONENTS Development)
+  if (${CMAKE_VERSION} VERSION_LESS "3.15")
+    find_package(Python REQUIRED)
+  else()
+    find_package(Python REQUIRED COMPONENTS Development)
+  endif()
 endif()
 
 # SWIG
