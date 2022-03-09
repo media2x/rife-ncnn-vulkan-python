@@ -67,7 +67,7 @@ def download(url, chunk_size=4096):
 def download_models() -> None:
     rife_ncnn_vulkan_zip = download(
         "https://github.com/nihui/rife-ncnn-vulkan/archive/"
-        "c26c90bb643f93953204e3f3fcd1adc347336150.zip"
+        "c806e66490679aebc1b4a6832985e004fd552f46.zip"
     )
 
     with zipfile.ZipFile(rife_ncnn_vulkan_zip) as archive:
