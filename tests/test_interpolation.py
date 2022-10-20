@@ -70,6 +70,25 @@ def test_rife_v4():
     assert percent_diff < 0.5
 
 
+def test_rife_v4_6():
+    input_image0 = Image.open(images_path / "0.png")
+    input_image1 = Image.open(images_path / "1.png")
+
+    interpolator = Rife(gpu_id, model="rife-v4.6")
+    output_image = interpolator.process(input_image0, input_image1)
+
+    test_image = Image.open(tests_path / "0.5_v4.6.png")
+    percent_diff = _calc_image_diff(test_image, output_image)
+    logging.getLogger().info(f"%diff: {percent_diff}")
+
+    input_image0.close()
+    input_image1.close()
+    output_image.close()
+    test_image.close()
+
+    assert percent_diff < 0.5
+
+
 def test_rife_v4_timestep():
     input_image0 = Image.open(images_path / "0.png")
     input_image1 = Image.open(images_path / "1.png")
@@ -87,3 +106,43 @@ def test_rife_v4_timestep():
 
     input_image0.close()
     input_image1.close()
+
+
+def test_rife_v4_tta():
+    # You might not pass this test if your GPU is weak. :) From poor developer Archie Meng
+    input_image0 = Image.open(images_path / "0.png")
+    input_image1 = Image.open(images_path / "1.png")
+
+    interpolator = Rife(gpu_id, model="rife-v4", tta_mode=True)
+    output_image = interpolator.process(input_image0, input_image1)
+
+    test_image = Image.open(tests_path / "0.5_v4_tta.png")
+    percent_diff = _calc_image_diff(test_image, output_image)
+    logging.getLogger().info(f"%diff: {percent_diff}")
+
+    input_image0.close()
+    input_image1.close()
+    output_image.close()
+    test_image.close()
+
+    assert percent_diff < 0.5
+
+
+def test_rife_v4_temporary_tta():
+    # You might not pass this test if your GPU is weak. :) From poor developer Archie Meng
+    input_image0 = Image.open(images_path / "0.png")
+    input_image1 = Image.open(images_path / "1.png")
+
+    interpolator = Rife(gpu_id, model="rife-v4", tta_temporal_mode=True)
+    output_image = interpolator.process(input_image0, input_image1)
+
+    test_image = Image.open(tests_path / "0.5_v4_temporary_tta.png")
+    percent_diff = _calc_image_diff(test_image, output_image)
+    logging.getLogger().info(f"%diff: {percent_diff}")
+
+    input_image0.close()
+    input_image1.close()
+    output_image.close()
+    test_image.close()
+
+    assert percent_diff < 0.5
