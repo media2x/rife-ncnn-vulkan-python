@@ -97,6 +97,7 @@ If you encounter a crash or error, try upgrading your GPU driver:
 | rife-v3.0 | 3.0 |
 | rife-v3.1 | 3.1 |
 | rife-v4 | 4.0 |
+| rife-v4.6 | 4.6 |
 
 ## Original RIFE Project
 
