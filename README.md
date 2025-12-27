@@ -26,6 +26,8 @@ pip install rife-ncnn-vulkan-python
 
 ### Use setuptools
 ```shell
+git submodule update --init --recursive
+python -mpip install .
 python setup.py install
 ```
 
